@@ -1,6 +1,6 @@
 # DKMS (Decentralized Key Management System) Design and Architecture V4
 
-2019-02-07
+2019-03-29
 
 **Authors:** Drummond Reed, Jason Law, Daniel Hardman, Mike Lodder
 
@@ -8,7 +8,7 @@
 
 **Advisors**: Stephen Wilson
 
-**STATUS:** This design and architecture for a decentralized key management system (DKMS) has been developed by Evernym Inc. under [a contract with the U.S. Department of Homeland Security Science & Technology Directorate](https://www.dhs.gov/science-and-technology/news/2017/07/20/news-release-dhs-st-awards-749k-evernym-decentralized-key). This third draft is being released on 3 April 2018 to begin an open public review and comment process in preparation for DKMS to be submitted to a standards development organization such as [OASIS](http://www.oasis-open.org/) for formal standardization.
+**STATUS:** This design and architecture for a decentralized key management system (DKMS) has been developed by Evernym Inc. under [a contract with the U.S. Department of Homeland Security Science & Technology Directorate](https://www.dhs.gov/science-and-technology/news/2017/07/20/news-release-dhs-st-awards-749k-evernym-decentralized-key). This fourth draft is being released on 29 Mar 2019 to begin an open public review and comment process in preparation for DKMS to be submitted to a standards development organization such as [OASIS](http://www.oasis-open.org/) for formal standardization.
 
 **Acknowledgements:** 
 
@@ -25,9 +25,9 @@
 
 ## 1.1. Overview
 
-DKMS (Decentralized Key Management System) is a new approach to cryptographic key management intended for use with blockchain and distributed ledger technologies (DLTs) where there are no centralized authorities. DKMS inverts a core assumption of conventional [PKI (public key infrastructure)](https://en.wikipedia.org/wiki/Public_key_infrastructure) architecture, namely that public key certificates will be issued by centralized or federated [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority) (CAs). With DKMS, the initial "root of trust" for all participants is any distributed ledger that supports a new form of root identity record called a DID (decentralized identifier).
+DKMS (Decentralized Key Management System) is a new approach to cryptographic key management intended for use with blockchain and distributed ledger technologies (DLTs) where there are no centralized authorities. DKMS inverts a core assumption of conventional [PKI (public key infrastructure)](https://en.wikipedia.org/wiki/Public_key_infrastructure) architecture, namely that public key certificates will be issued by centralized or federated [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority) (CAs). With DKMS, the initial "root of trust" for all participants is any distributed ledger or decentralized protocol that supports a new form of root identity record called a DID (decentralized identifier).
 
-A DID is a globally unique identifier that is generated cryptographically and self-registered with the identity owner’s choice of a DID-compatible distributed ledger so no central registration authority is required. Each DID points to a DID document—a JSON or JSON-LD object containing the associated public verification key(s) and addresses of services such as off-ledger agent(s) supporting secure peer-to-peer interactions with the identity owner. For more on DIDs, see the [DID Primer](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/topics-and-advance-readings/did-primer.md).
+A DID is a globally unique identifier that is generated cryptographically and self-registered with the identity owner’s choice of a DID-compatible distributed ledger or decentralized protocol so no central registration authority is required. Each DID points to a DID document—a JSON or JSON-LD object containing the associated public verification key(s) and addresses of services such as off-ledger agent(s) supporting secure peer-to-peer interactions with the identity owner. For more on DIDs, see the [DID Primer](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/topics-and-advance-readings/did-primer.md). For more on peer-to-peer interactions, see the [DID Communications explainer](https://github.com/hyperledger/indy-hipe/blob/b0708395/text/0003-did-comm/README.md).
 
 Since no third party is involved in the initial registration of a DID and DID document, it begins as "trustless". From this starting point, trust between DID-identified peers can be built up through the exchange of [verifiable credentials](https://www.w3.org/2017/vc/charter.html)—credentials about identity attributes that include cryptographic proof of authenticity of authorship. These proofs can be verified by reference to the issuer’s DID and DID document. For more about verifiable credentials, see the [Verifiable Credentials Primer](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/topics-and-advance-readings/verifiable-credentials-primer.md). 
 
@@ -45,9 +45,9 @@ This creates political and structural barriers to establishing and updating auth
 
 3. It discourages the use of modern cryptography for increased security and privacy, weakening our cybersecurity infrastructure.
 
-Distributed ledger technology can remove these barriers and make it much easier to share and verify public keys. This enables each entity to manage its own authoritative key material without requiring approval from other parties. Furthermore, those changes can be seen immediately by the entity’s peers without requiring them to change their software or "certificate store".
+Decentralized technologies such as distributed ledgers and edge protocols can remove these barriers and make it much easier to share and verify public keys. This enables each entity to manage its own authoritative key material without requiring approval from other parties. Furthermore, those changes can be seen immediately by the entity’s peers without requiring them to change their software or "certificate store".
 
-The use of DLTs for this purpose will bring DPKI into the mainstream—a combination of DIDs for decentralized identification and DKMS for decentralized key management. DPKI will provide a simple, secure, way to generate strong public/private key pairs, register them for easy discovery and verification, and rotate and retire them as needed to maintain strong security and privacy.
+Maturing DLTs and protocols will bring DPKI into the mainstream—a combination of DIDs for decentralized identification and DKMS for decentralized key management. DPKI will provide a simple, secure, way to generate strong public/private key pairs, register them for easy discovery and verification, and rotate and retire them as needed to maintain strong security and privacy.
 
 ## 1.3. Benefits
 
@@ -56,6 +56,8 @@ DKMS architecture and DPKI provides the following major benefits:
 1. **No single point of failure.** With DKMS, there is no central CA or other registration authority whose failure can jeopardize large swaths of users.
 
 2. **Interoperability.** DKMS will enable any two identity owners and their applications to perform key exchange and create encrypted P2P connections without reliance on proprietary software, service providers, or federations.
+
+3. **Portability.** DKMS will enable identity owners to avoid being locked into any specific implementation of a DKMS-compatible wallet, agent, or agency. Identity owners should—with the appropriate security safeguards—be able to use the DKMS protocol itself to move the contents of their wallet (though not necessarily the actual cryptographic keys) between compliant DKMS implementations.
 
 3. **Resilient trust infrastructure.** DKMS incorporates all the advantages of distributed ledger technology for decentralized access to cryptographically verifiable data. It then adds on top of it a distributed web of trust where any peer can exchange keys, form connections, and issue/accept verifiable credentials from any other peer.
 
@@ -67,11 +69,11 @@ DKMS architecture and DPKI provides the following major benefits:
 
 As a general rule, DKMS requirements are a derivation of CKMS requirements, adjusted for the lack of centralized authorities or systems for key management operations. Evernym’s DKMS team and subcontractors performed an extensive analysis of the applicability of conventional CKMS requirements to DKMS using [NIST Special Publication 800-130: A Framework for Designing Cryptographic Key Management Systems](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-130.pdf). For a summary of the results, see:
 
-* [Evernym HSHQDC-17-C-00018 - DKMS Requirements Spreadsheet Based On NIST 800-130](../005-dkms/pdf/DKMS%20Requirements%20Spreadsheet%20Based%20On%20NIST%20800-130%20-%20Sheet1.pdf)
+* [Evernym HSHQDC-17-C-00018 - DKMS Requirements Spreadsheet Based On NIST 800-130](pdf/DKMS%20Requirements%20Spreadsheet%20Based%20On%20NIST%20800-130%20-%20Sheet1.pdf)
 
-* [Evernym HSHQDC-17-C-00018 - DKMS Requirements Text Based on NIST 800-130](../005-dkms/pdf/DKMS%20Requirements%20Text%20Based%20on%20NIST%20800-130.pdf)
+* [Evernym HSHQDC-17-C-00018 - DKMS Requirements Text Based on NIST 800-130](pdf/DKMS%20Requirements%20Text%20Based%20on%20NIST%20800-130.pdf)
 
-* [Evernym HSHQDC-17-C-00018 - DKMS Requirements Report - 30 June 2017](../005-dkms/pdf/DKMS%20Requirements%20Report%20-%2030%20June%202017.pdf)
+* [Evernym HSHQDC-17-C-00018 - DKMS Requirements Report - 30 June 2017](pdf/DKMS%20Requirements%20Report%20-%2030%20June%202017.pdf)
 
 The most relevant special requirements are highlighted in the following sections.
 
@@ -117,7 +119,7 @@ The DKMS design MUST enable key management to be delegated by one identity owner
 
 Although DKMS infrastructure enables "self-sovereign identity"—digital identifiers and identity wallets that are completely under the control of an identity owner and cannot be taken away by a third-party—not all individuals have the ability to be self-sovereign. They may be operating at a physical, economic, or network disadvantage that requires another identity owner (individual or org) to act as an agent on their behalf. 
 
-Other identity owners may simply prefer to have others manage their keys for purposes of convenience, efficiency, or safety. In either case, this means DKMS architecture needs to incorporate the concept of **delegation** as defined in the [Decentralized Identifiers (DID) specification](https://w3c-ccg.github.io/did-spec/).
+Other identity owners may simply prefer to have others manage their keys for purposes of convenience, efficiency, or safety. In either case, this means DKMS architecture needs to incorporate the concept of **delegation** as defined in the [Decentralized Identifiers (DID) specification](https://w3c-ccg.github.io/did-spec/) and in the [Sovrin Glossary](https://docs.google.com/document/d/1gfIz5TT0cNp2kxGMLFXr19x1uoZsruUe_0glHst2fZ8/edit?pli=1#heading=h.oc1psevtq24m).
 
 ## 2.8. Portability
 
@@ -133,7 +135,7 @@ The DKMS design SHOULD be capable of being extended to support new cryptographic
 
 Section 7 of NIST 800-130 includes several requirements for conventional CKMS to be able to transition to newer and stronger cryptographic algorithms, but it does not go as far as is required for DKMS infrastructure, which must be capable of adapting to evolving Internet security and privacy infrastructure as well as rapid advances in distributed ledger technologies.
 
-It is worth noting that the DKMS specifications will not themselves include a trust framework; rather, one or more trust frameworks can be layered over them to formalize certain types of extensions. This provides a flexible and adaptable method of extending DKMS to meet the needs of specific communities.
+It is worth noting that the DKMS specifications will not themselves include a trust framework (also called a [governance framework](https://docs.google.com/document/d/1gfIz5TT0cNp2kxGMLFXr19x1uoZsruUe_0glHst2fZ8/edit?pli=1#heading=h.it5rm9r2tq2r); rather, one or more trust frameworks can be layered over them to formalize certain types of extensions. This provides a flexible and adaptable method of extending DKMS to meet the needs of specific communities.
 
 ## 2.10. Simplicity
 
@@ -151,7 +153,7 @@ While many CKMS systems are deployed using proprietary technology, the baseline 
 
 At a high level, DKMS architecture consists of three logical layers:
 
-1. **The DID layer** is the foundational layer consisting of DIDs registered and resolved via distributed ledgers.
+1. **The DID layer** is the foundational layer consisting of DIDs registered and resolved via distributed ledgers and/or decentralized protocols.
 
 2. **The cloud layer** consists of server-side agents and wallets that provide a means of communicating and mediating between the DID layer and the edge layer. This layer enables encrypted peer-to-peer communications for exchange and verification of DIDs, public keys, and verifiable credentials.
 
@@ -159,25 +161,25 @@ At a high level, DKMS architecture consists of three logical layers:
 
 Figure 1 is an overview of this three-layer architecture:
 
-![image alt text](../005-dkms/images/image_0.png)
+![image alt text](images/image_0.png)
 
 Figure 1: The high-level three-layer DKMS architecture
 
 ## 3.1. The DID (Decentralized Identifier) Layer
 
-The foundation for DKMS is laid by the [DID specification](https://w3c-ccg.github.io/did-spec/). DIDs can work with any DLT (distributed ledger technology) for which a DID method—a way of creating, reading, updating, and revoking a DID—has been specified. As globally unique identifiers, DIDs are patterned after URNs (Uniform Resource Names): colon-delimited strings consisting of a scheme name followed by a DID method name followed by a method-specific identifier. Here is an example DID that uses the Sovrin DID method:
+The foundation for DKMS is laid by the [DID specification](https://w3c-ccg.github.io/did-spec/). DIDs can work with any decentralized source of truth such as a distributed ledger or edge protocol for which a DID method—a way of creating, reading, updating, and revoking a DID—has been specified. As globally unique identifiers, DIDs are patterned after URNs (Uniform Resource Names): colon-delimited strings consisting of a scheme name followed by a DID method name followed by a method-specific identifier. Here is an example DID that uses the Sovrin DID method:
 
-**did:sov:21tDAKCERh95uGgKbJNHYp**
+>**did:sov:21tDAKCERh95uGgKbJNHYp**
 
 Each DID method specification defines:
 
-1. The specific distributed ledger against which the DID method operates;
+1. The specific source of truth against which the DID method operates;
 
 2. The format of the method-specific identifier;
 
 3. The CRUD operations (create, read, update, delete) for DIDs and DID documents on that ledger.
 
-DID resolver code can then be written to perform these CRUD operations on the target ledger with respect to any DID conforming to that DID method specification. Note that some distributed ledger technologies (DLTs) and distributed networks are better suited to DIDs than others. The DID specification itself is neutral with regard to DLTs; it is anticipated that those DLTs that are best suited for the purpose of DIDs will see the highest adoption rates.there will be Darwinian selection of the DLTs that are best fit for the purpose of DIDs.
+DID resolver code can then be written to perform these CRUD operations on the target system with respect to any DID conforming to that DID method specification. Note that some distributed ledger technologies (DLTs) and distributed networks are better suited to DIDs than others. The DID specification itself is neutral with regard to DLTs; it is anticipated that those DLTs that are best suited for the purpose of DIDs will see the highest adoption rates.there will be Darwinian selection of the DLTs that are best fit for the purpose of DIDs.
 
 From a digital identity perspective, the primary problem that DIDs and DID documents solve is the need for a universally available, decentralized root of trust that any application or system can rely upon to discover and verify credentials about the DID subject. Such a solution enables us to move "beyond federation" into a world where any peer can enter into trusted interactions with any other peer, just as the Internet enabled any two peers to connect and communicate.
 
@@ -191,11 +193,11 @@ Cloud agents and wallets will typically be hosted by a service provider called a
 
 From an architectural standpoint, it is critical that the cloud layer be designed so that it does not "recentralize" any aspect of DKMS. In other words, even if an identity owner chooses to use a specific DKMS service provider for a specific set of cloud agent functions, the identity owner should be able to substitute another DKMS service provider at a later date and retain complete portability of her DKMS keys, data and metadata.
 
-Another feature of the cloud layer is that cloud agents can use DIDs and DID documents to automatically negotiate mutually authenticated secure connections with each other using [DID TLS](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-fall2017/blob/master/draft-documents/did-primer.md), a protocol being designed for this purpose.
+Another feature of the cloud layer is that cloud agents can use DIDs and DID documents to automatically negotiate mutually authenticated secure connections with each other using [DID Communication](https://github.com/hyperledger/indy-hipe/blob/b0708395/text/0003-did-comm/README.md), a protocol being designed for this purpose.
 
 ## 3.3. The Edge Layer: Edge Agents and Edge Wallets
 
-The edge layer is vital to DKMS because it is where identity owners interact directly with computing devices, operating systems, and applications. This layer consists of  and have direct control over DKMS edge agents and edge wallets that are under the direct control of identity owners. When designed and implemented correctly, edge devices, agents, and wallets are also the safest place to store private keys and other cryptographic material. They are the least accessible for network intrusion, and even a successful attack on any single client device would yield the private data for only a single user or at most a small family of users.
+The edge layer is vital to DKMS because it is where identity owners interact directly with computing devices, operating systems, and applications. This layer consists of DKMS edge agents and edge wallets that are under the direct control of identity owners. When designed and implemented correctly, edge devices, agents, and wallets can also be the safest place to store private keys and other cryptographic material. They are the least accessible for network intrusion, and even a successful attack on any single client device would yield the private data for only a single user or at most a small family of users.
 
 Therefore, the edge layer is where most DKMS private keys and link secrets are generated and where most key operations and storage are performed. To meet the security and privacy requirements, DKMS architecture makes the following two assumptions:
 
@@ -203,7 +205,7 @@ Therefore, the edge layer is where most DKMS private keys and link secrets are g
 
 2. Private keys used by the agent never leave the secure element. 
 
-By default edge agents are always paired with a corresponding cloud agent due to the many DKMS operations that a cloud agent enables, including communications via the DKMS protocol to other edge and cloud agents. However this is not strictly necessary. As shown in Figure 1, edge agents could also communicate directly, peer-to-peer, via a protocol such as Bluetooth, NFC, or another mesh network protocol. Edge agents may also establish secure connections with cloud agents or with others using DID TLS.
+By default edge agents are always paired with a corresponding cloud agent due to the many DKMS operations that a cloud agent enables, including communications via the DKMS protocol to other edge and cloud agents. However this is not strictly necessary. As shown in Figure 1, edge agents could also communicate directly, peer-to-peer, via a protocol such as Bluetooth, NFC, or another mesh network protocol. Edge agents may also establish secure connections with cloud agents or with others using DID Communication.
 
 ## 3.4. Verifiable Credentials
 
@@ -211,17 +213,17 @@ By themselves, DIDs are "trustless", i.e., they carry no more inherent trust tha
 
 To achieve a higher level of trust, DKMS agents may exchange digitally signed credentials called [verifiable credentials](https://www.w3.org/2017/vc/). Verifiable credentials are being standardized by the W3C Working Group of the same name. The purpose is summarized in the [charter](https://www.w3.org/2017/vc/charter.html):
 
-*It is currently difficult to express banking account information, education qualifications, healthcare data, and other sorts of machine-readable personal information that has been verified by a 3rd party on the Web. These sorts of data are often referred to as ***_verifiable credentials_***. The mission of the Verifiable Credentials Working Group is to make expressing, exchanging, and verifying credentials easier and more secure on the Web.*
+*It is currently difficult to express banking account information, education qualifications, healthcare data, and other sorts of machine-readable personal information that has been verified by a 3rd party on the Web. These sorts of data are often referred to as **verifiable credentials**. The mission of the Verifiable Credentials Working Group is to make expressing, exchanging, and verifying credentials easier and more secure on the Web.*
 
-The following diagram from the Verifiable Credentials Working Group illustrates the primary roles in the verifiable credential ecosystem and the close relationship between DIDs and verifiable credentials.
+The following diagram from the [W3C Verifiable Claims Working Group](https://www.w3.org/2017/vc/charter.html) illustrates the primary roles in the verifiable credential ecosystem and the close relationship between DIDs and verifiable credentials.
 
-![image alt text](../005-dkms/images/image_1.png)
+![image alt text](images/image_1.png)
 
 Figure 2: The W3C Verifiable Credentials ecosystem
 
 Note that what is being verified in a verifiable credential is the signature of the credential issuer. The strength of the actual credential depends on the degree of trust the verifier has in the issuer. For example, if a bank issues a credential saying that the subject of the credential has a certain credit card number, a merchant can rely on the credential if the merchant has a high degree of trust in the bank.
 
-The Verifiable Credentials Working Group is standardizing both the format of credentials and of digital signatures on the credentials. Different digital signature formats require different cryptographic key material. For example, credentials that use a zero-knowledge signature format such as [Camenisch-Lysyanskaya (CL) signatures](http://groups.csail.mit.edu/cis/pubs/lysyanskaya/cl02b.pdf) require a "master secret" or “link secret” that enables the prover (the identity owner) to make proofs about the credential without revealing the underlying data or signatures in the credential (or the prover's DID with respect to the credential issuer). This allows for "credential presentations" that are unlinkable to each other. Link secrets are another type of cryptographic key material that must be stored in DKMS wallets.
+The Verifiable Claims Working Group is standardizing both the format of credentials and of digital signatures on the credentials. Different digital signature formats require different cryptographic key material. For example, credentials that use a zero-knowledge signature format such as [Camenisch-Lysyanskaya (CL) signatures](http://groups.csail.mit.edu/cis/pubs/lysyanskaya/cl02b.pdf) require a "master secret" or “link secret” that enables the prover (the identity owner) to make proofs about the credential without revealing the underlying data or signatures in the credential (or the prover's DID with respect to the credential issuer). This allows for "credential presentations" that are unlinkable to each other. Link secrets are another type of cryptographic key material that must be stored in DKMS wallets.
 
 # 4. Ledger Architecture
 
@@ -229,7 +231,7 @@ A fundamental feature of DIDs and DKMS is that they will work with any modern bl
 
 There are a variety of ledger designs and governance models as illustrated in Figure 3. 
 
-![image alt text](../005-dkms/images/image_2.png)
+![image alt text](images/image_2.png)
 
 Figure 3: Blockchain and distributed ledger governance models
 
@@ -249,7 +251,7 @@ Such a publicly available root of trust is particularly important for:
 
 3. **Revocation registries** needed for revocation of verifiable credentials that use proofs.
 
-4. **Policy registries** needed for authorization and revocation of DKMS agents (see section 7.2).
+4. **Policy registries** needed for authorization and revocation of DKMS agents (see section 9.2).
 
 5. **Anchoring transactions** posted for verification or coordination purposes by smart contracts or other ledgers, including microledgers (below).
 
@@ -259,7 +261,7 @@ Although public ledgers may also be used for **private DIDs**—DIDs that are in
 
 ## 4.3. Microledgers
 
-From a privacy perspective—and particularly for compliance with privacy regulations such as the EU General Data Protection Regulation (GDPR)—the ideal identifier is a **pairwise pseudonymous DID**. This DID (and its corresponding DID document) is only known to the two parties to a relationship.
+From a privacy perspective—and particularly for compliance with privacy regulations such as the EU General Data Protection Regulation (GDPR)—the ideal identifier is a **pairwise pseudonymous DID**. This DID (and its corresponding DID document) is only known to the two parties in a relationship.
 
 Because pairwise pseudonymous DID documents contain the public keys and service endpoints necessary for the respective DKMS agents to connect and send encrypted, signed messages to each other, there is no need for pairwise pseudonymous DIDs to be registered on a public ledger or even a conventional private ledger. Rather they can use **microledgers**. 
 
@@ -269,11 +271,31 @@ A microledger is essentially identical to a conventional private ledger except i
 
 2. Transactions are cryptographically ordered and tamper evident.
 
-3. Transactions are replicated efficiently across agents using a simple consensus protocol.
+3. Transactions are replicated efficiently across agents using simple consensus protocols.
+These protocol, and the microledgers that provide their persistent state, constitute
+a root of trust for the relationship.
 
-Microledgers are effectively permissionless because anyone can operate one in cooperation with anyone else—only the parties to the microledger relationship need to agree. If there is a danger of the parties to the microledger getting "out of sync" (e.g., if both of them needed to move to different agencies at the same time, so that neither is able to push a change-of-endpoint to the other), the party’s agents can register a [dead drop point](https://en.wikipedia.org/wiki/Dead_drop) on a public ledger. This is an encrypted value both parties can read to negotiate a temporary location where they can re-sync their microledgers to restore their connection.
+Microledgers are effectively permissionless because anyone can operate one
+in cooperation with anyone else—only the parties to the microledger relationship
+need to agree. If there is a danger of the parties to the microledger getting
+"out of sync" (e.g., if an attacker has compromised one party's agents such
+that the party's state is deadlocked, or one party's agents have all been
+lost so that the party is unable to receive a change-of-state from the other),
+the party’s agents can register a
+[dead drop point](https://en.wikipedia.org/wiki/Dead_drop). This is a
+pre-established endpoint and keys both parties can use to re-sync their
+microledgers and restore their connection.
 
 Microledgers play a special role in DKMS architecture because they are used to maintain pairwise pseudonymous connections between DKMS agents. The use of microledgers also helps enormously with the problems of scale—they can significantly reduce the load on public ledgers by moving management of pairwise pseudonymous DIDs and DID documents directly to DKMS agents.
+
+The protocols associated with microledgers include:
+
+* A protocol to formally connect two parties and exchange DID Documents.
+* A protocol to update and synchronize DID Documents.
+* A protocol to query DID Documents.
+
+Today, the only known example of this approach is the [`did:peer` method](https://dhh1128.github.io/peer-did-method-spec/index.html).
+It is possible that alternative implementations will emerge.
 
 # 5. Key Management Architecture
 
@@ -347,7 +369,7 @@ DKMS key management must encompass the keys needed by different DID methods as w
 
 2. **DID keys:** (one per relationship per agent) Ed25519 keys used for non-repudiation signing and verification for DIDs. Each agent manages their own set of DID keys.
 
-3. **Agent policy keys:** (one per agent) Ed25519 key pairs used with the agent policy registry. See section 7.2. The public key is stored with the agent policy registry. Transactions made to the policy registry are signed by the private key. The keys are used in zero-knowledge during proof presentation to show the agent is authorized by the identity owner to present the proof. Unauthorized agents MUST NOT be trusted by verifiers.
+3. **Agent policy keys:** (one per agent) Ed25519 key pairs used with the agent policy registry. See section 9.2. The public key is stored with the agent policy registry. Transactions made to the policy registry are signed by the private key. The keys are used in zero-knowledge during proof presentation to show the agent is authorized by the identity owner to present the proof. Unauthorized agents MUST NOT be trusted by verifiers.
 
 4. **Agent recovery keys:** (a fraction per trustee) Ed25519 keys. A public key is stored by the agent and used for encrypting backups. The private key is saved to an offline medium or split into shares and given to trustees. To encrypt a backup, an ephemeral X25519 key pair is created where the ephemeral private key is used to perform a Diffie-Hellman agreement with the public recovery key to create a wallet encryption key. The private ephemeral key is forgotten and the ephemeral public key is stored with the encrypted wallet backup. To decrypt a backup, the private recovery key performs a Diffie-Hellman agreement with the ephemeral public key to create the same wallet encryption key.
 
@@ -431,9 +453,29 @@ For social recovery, agents SHOULD split keys into shares and distribute them to
 
 The shares may be encrypted by a key derived from a KDF or PRNG whose input is something only the identity owner knows, has, or is or any combination of these.
 
-![image alt text](../005-dkms/images/image_3.png)
+![image alt text](images/image_3.png)
 
 Figure 4: Key sharing using Shamir Secret Sharing
+
+As the adoption interest in decentralized identity grows, social recovery has become a major focus of additional research and development in the industry. For example, at the Rebooting the Web of Trust #8 conference held in Barcelona 1-3 March 2019, six papers on the topic were submitted (note that several of these also have extensive bibliographies):
+
+1. [A New Approach to Social Key Recovery](https://github.com/WebOfTrustInfo/rwot8-barcelona/blob/master/topics-and-advance-readings/social-key-recovery.md) by Christopher Allen and Mark Friedenbach
+
+2. [Security Considerations of Shamir's Secret Sharing](https://github.com/WebOfTrustInfo/rwot8-barcelona/blob/master/topics-and-advance-readings/security_shamirs.md) by Peg
+
+3. [Implementing of Threshold Schemes](https://github.com/WebOfTrustInfo/rwot8-barcelona/blob/master/topics-and-advance-readings/implementing-threshold-schemes.md) by Daan Sprenkels
+
+4. [Social Key Recovery Design and Implementation](https://github.com/WebOfTrustInfo/rwot8-barcelona/blob/master/topics-and-advance-readings/Socia_%20Key_Recovery_design_implentation.md) by Hank Chiu, Hankuan Yu, Justin Lin & Jon Tsai
+
+5. [SLIP-0039: Shamir's Secret-Sharing for Mnemonic Codes](https://github.com/satoshilabs/slips/blob/master/slip-0039.md) by The TREZOR Team
+
+6. [Joram 2.0.0](https://github.com/WebOfTrustInfo/rwot8-barcelona/blob/master/topics-and-advance-readings/joram.2.0.0.md) by Joe Andrieu and Bob Clint
+
+In addition, two new papers on the topic were started at the conference and are still in development at the time of publication:
+
+1. [Shamir Secret Sharing Best Practices](https://github.com/WebOfTrustInfo/rwot8-barcelona/blob/master/draft-documents/shamir-secret-sharing-best-practices.md) by Christopher Allen et al.
+
+2. [Evaluating Social Schemes for Recovering Control of an Identifier](https://github.com/WebOfTrustInfo/rwot8-barcelona/blob/master/draft-documents/Evaluating-social-recovery.md) by Sean Gilligan, Peg, Adin Schmahmann, and Andrew Hughes
 
 # 7. Recovery From Key Loss
 
@@ -455,6 +497,11 @@ Loss of the link secret means the owner can no longer generate proofs for the ve
 
 Loss of credentials requires the owner to contact his credential issuers, reauthenticate, and request the issuers revoke existing credentials, if recovery from a backup is not possible. Credentials SHOULD be recoverable from the encrypted backup. 
 
+## 7.5. Relationship State Recovery
+
+Recovery of relationship state due to any of the above key-loss scenarios
+is enabled via the [dead drop mechanism](#95-dead-drops).
+
 # 8. Recovery From Key Compromise
 
 Key compromise means that private keys and/or master keys have become or can become known either passively or actively. 
@@ -463,7 +510,7 @@ Key compromise means that private keys and/or master keys have become or can bec
 
 2. **"Actively" means the identity owner knows her keys have been exposed.** For example, the owner is locked out of her own devices and/or DKMS agents and wallets, or becomes aware of abuse or fraud.
 
-To protect from either, there are techniques available: **rotation,** **revocation, **and quick **recovery**. Rotation helps to limit a passive compromise, while revocation and quick recovery help to limit an active one.
+To protect from either, there are techniques available: **rotation,** **revocation**, and quick **recovery**. Rotation helps to limit a passive compromise, while revocation and quick recovery help to limit an active one.
 
 ## 8.1. Key Rotation
 
@@ -495,6 +542,11 @@ Compromise of the owner link secret means an attacker may impersonate the owner 
 
 Compromise of a verifiable credential means an attacker has learned the attributes of the credential. Unless the attacker also manages to compromise the link secret and an authorized agent, he is not able to assert the credential, so the only loss is control of the underlying data.
 
+## 8.7. Relationship State Recovery
+
+Recovery of relationship state due to any of the above key-compromise scenarios
+is enabled via the [dead drop mechanism](#95-dead-drops).
+
 # 9. DKMS Protocol
 
 ## 9.1. Microledger Transactions
@@ -511,10 +563,10 @@ for agents to prove in zero knowledge that they are authorized by the identity o
 
 - The authorization policy has a unique address on the ledger.
 - Each of the identity owner's agents has a secret value.
-- The agent makes a blinded commitment to the secret value,
-- then makes another blinded commitment to both the first commitment and the policy address.
+- The agent makes a blinded commitment to the secret value.
+- The agent then makes another blinded commitment to both the first commitment and the policy address.
 - The first commitment is stored in the PROVE section of the authorization policy.
-- The second commitment is stored by the ledger in a global registry.
+- The second commitment is stored by the ledger in a global registry (shared by all identity owners, or at least a large number of them, for herd privacy).
 
 When an agent is granted PROVE authorization, by adding a commitment to the
 agent's secret value to PROVE section of the authorization policy, the ledger adds
@@ -523,20 +575,40 @@ authorization, the ledger removes the associated commitment from the prover regi
 The ledger can enforce sophisticated owner defined rules like requiring multiple
 signatures to authorize updates to the Policy.
 
-A zero knowledge proof that an agent is authorized is possible because the ledger
+An agent can now prove in zero knowledge that it is authorized because the ledger
 maintains a global registry for all agents with PROVE authorization for all identity
 owners. An agent can prove that its secret value and the policy address in which
 that value is given PROVE authorization are part of the global policy registry
-without revealing the secret value, or the policy address.
+without revealing the secret value, or the policy address. By using a zero knowledge proof, the global policy registry does not enable correlation of any specific identity owner.
 
 
 ## 9.3. Authenticated Encryption
 
 The use of DIDs and microledgers allows communication between agents to use **authenticated encryption**. Agents use their DID verification keys for authenticating each other whenever a communication channel is established. Microledgers allow DID keys to have rooted mutual authentication for any two parties with a DID. In the sequence diagrams in section 10, all agent-to-agent communications that uses authenticated encryption is indicated by bold blue arrows.
 
-# 9.4 Recovery connection
+## 9.4. Recovery connection
 
-Each Identity Owner begins a recovery operation by requesting their respective recovery information from trustees. After a trustee has confirmed the request originated with the identity owner and not a malicious party, a recovery connection is formed. This connection type is special–it is only meant for recovery purposes. Recovery connections are decommissioned when the minimum recovery shares have been received and the original data has been restored. Identity owners can resume normal connections because their keys have been recovered. Trustee’s SHOULD only send recovery shares to identity owners over a recovery connection.  
+Each Identity Owner begins a recovery operation by requesting their respective recovery information from trustees. After a trustee has confirmed the request originated with the identity owner and not a malicious party, a **recovery connection** is formed. This special type of connection is meant only for recovery purposes. Recovery connections are decommissioned when the minimum number of recovery shares have been received and the original encrypted wallet data has been restored. Identity owners can then resume normal connections because their keys have been recovered. Trustees SHOULD only send recovery shares to identity owners over a recovery connection.  
+
+## 9.5. Dead Drops
+
+In scenarios where two parties to a connection move agencies (and thus service endpoints) at the same time, or one party's agents have been compromised such that it
+can no longer send or receive relationship state changes, there is a need
+for recovery not just of keys and agents, but of the state of the relationship.
+These scenarios may include malicious compromise of agents by an attacker
+such that neither the party nor the attacker controls enough agents to meet
+the thresholds set in the DID Document or the Authorization Policy, or complete
+loss of all agents due to some catastrophic event.
+
+In some cases, relationship state may be recoverable via encrypted backup
+of the agent wallets. In the event that this is not possible, the parties
+can make use of a **dead drop** to recover their relationship state.
+
+A dead drop is established and maintained as part of a pairwise relationship.
+The dead drop consists of a service endpoint and the public keys needed to
+verify the package that may be retrieved from that endpoint. The keys needed
+for the dead drop are derived from a combination of a Master key and the
+pairwise DID of the relationship that is being recovered.
 
 # 10. Protocol Flows
 
@@ -550,12 +622,16 @@ Table 1 is a glossary of the DKMS key names and types used in these diagrams.
     <td>Description</td>
   </tr>
   <tr>
-    <td>A<sub>p</sub><sup>x-pk</sup></td>
-    <td>Agent Policy Public Key for agent x</td>
+    <td>A<sub>p</sub><sup>x-sv</sup></td>
+    <td>Agent Policy Secret Value for agent x</td>
   </tr>
   <tr>
-    <td>A<sub>p</sub><sup>x-sk</sup></td>
-    <td>Agent Policy Private (Secret) Key for agent x</td>
+    <td>A<sub>p</sub><sup>x-svc</sup></td>
+    <td>Agent Policy Secret Value Commitment for agent x</td>
+  </tr>
+  <tr>
+    <td>A<sub>p</sub><sup>x-ac</sup></td>
+    <td>Agent Policy Address Commitment for agent x</td>
   </tr>
   <tr>
     <td>A<sub>A</sub><sup>x-ID</sup></td>
@@ -602,7 +678,7 @@ Table 1: DKMS key names used in this section
 
 An identity owner’s experience with DKMS begins with her first installation of a DKMS edge agent. This startup routine is reused by many other protocol sequences because it is needed each time an identity owner installs a new DKMS edge agent.
 
-![image alt text](../005-dkms/images/image_4.png)
+![image alt text](images/01-edge-agent-start.png)
 
 The first step after successful installation is to prompt the identity owner whether he/she already has a DKMS identity wallet or is instantiating one for the first time. If the owner already has a wallet, the owner is prompted to determine if the new edge agent installation is for the purpose of adding a new edge agent, or recovering from a lost or compromised edge agent. Each of these options references another protocol pattern.
 
@@ -610,7 +686,7 @@ The first step after successful installation is to prompt the identity owner whe
 
 Any time a new agent is provisioned—regardless of whether it is an edge agent or a cloud agent—the same sequence of steps are necessary to set up the associated wallet and secure communications with the new agent.
 
-![image alt text](../005-dkms/images/image_5.png)
+![image alt text](images/02-provision-new-agent.png)
 
 As noted in section 3.3, DKMS architecture recommends that a DKMS agent be installed in an environment that includes a secure element. So the first step is for the edge agent to set up the credential the identity owner will use to unlock the secure element. On modern smartphones this will typically be a biometric, but it could be a PIN, passcode, or other factor, or a combination of factors.
 
@@ -622,15 +698,15 @@ Finally the edge agent requests the secure element to create a wallet encryption
 
 The first time a new identity owner installs an edge agent, it must also set up the DKMS components that enable the identity owner to manage multiple separate DIDs and verifiable credentials as if they were from one logically unified digital identity. It must also lay the groundwork for the identity owner to install additional DKMS agents on other devices, each of which will maintain its own DKMS identity wallet while still enabling the identity owner to act as if they were all part of one logically unified identity wallet.
 
-![image alt text](../005-dkms/images/image_6.png)
+![image alt text](images/03-first-edge-agent.png)
 
-Link secrets are defined in section 5.1 and policy registries in section 7.2. The edge agent first needs to generate and store the link secret in the edge wallet. It then needs to generate the policy registry address and store it in the edge wallet. Now it is ready to update the agent policy registry.
+Link secrets are defined in section 5.1 and policy registries in section 9.2. The edge agent first needs to generate and store the link secret in the edge wallet. It then needs to generate the policy registry address and store it in the edge wallet. Now it is ready to update the agent policy registry.
 
 ## 10.4. Update Agent Policy Registry
 
 As explained in section 9.2, an agent policy registry is the master control point that an identity owner uses to authorize and revoke DKMS agent proof authorization (edge or cloud).
 
-![image alt text](../005-dkms/images/image_7.png)
+![image alt text](images/04-update-agent-policy-registry.png)
 
 Each time the identity owner takes an action to add, revoke, or change the permissions for an agent, the policy registry is updated. For example, at the end of the protocol sequence in section 10.3, the action is to write the first policy registry entries that authorize the first edge agent.
 
@@ -638,9 +714,9 @@ Each time the identity owner takes an action to add, revoke, or change the permi
 
 The final step in first-time setup of an edge agent is creation of the corresponding cloud agent. As explained in section 3.3, the default in DKMS architecture is to always pair an edge agent with a corresponding cloud agent due to the many different key management functions this combination can automate.
 
-![image alt text](../005-dkms/images/image_8.png)
+![image alt text](images/05-add-cloud-agent-01.png)
 
-![image alt text](../005-dkms/images/image_9.png)
+![image alt text](images/05-add-cloud-agent-02.png)
 
 The process of registering a cloud agent begins with the edge agent contacting the **agency agent**. For purposes of this document, we will assume that the edge agent has a relationship with one or more agencies, and has a trusted method (such as a pre-installed DID) for establishing a secure connection using authenticated encryption.
 
@@ -654,7 +730,7 @@ Once these tasks are performed, the results are returned to the edge agent and s
 
 Each time an identity owner installs a new edge agent after their first edge agent, the process must initialize the new agent and grant it the necessary authorizations to begin acting on the identity owner’s behalf.
 
-![image alt text](../005-dkms/images/image_10.png)
+![image alt text](images/06-add-new-edge-agent.png)
 
 Provisioning of the new edge agent (Edge Agent 2) starts by the identity owner installing the edge agent software (section 10.2) and then receiving instructions about how to provision the new edge agent from an existing edge agent (Edge Agent 1). Note that Edge Agent 1 must the authorization to add a new edge agent (not all edge agents have such authorization). The identity owner must also select the authorizations the edge agent will have (DKMS agent developers will compete to make such policy choices easy and intuitive for identity owners).
 
@@ -668,9 +744,9 @@ Once that is confirmed, provisioning of Edge Agent 2 is completed when Edge Agen
 
 The primary purpose of DIDs and DKMS is to enable trusted digital connections. One of the most common use cases is when an identity owner needs to create a connection to an entity that has a public DID, for example any website that wants to support trusted decentralized identity connections with its users (for registration, authentication, verifiable credentials exchange, secure communications, etc.)
 
-![image alt text](../005-dkms/images/image_11.png)
+![image alt text](images/07-add-connection-public-did-01.png)
 
-![image alt text](../005-dkms/images/image_12.png)
+![image alt text](images/07-add-connection-public-did-02.png)
 
 Note that this sequence is entirely about agent-to-agent communications between DKMS agents to create a shared microledger and populate it with the pairwise pseudonymous DIDs that Alice and Org assign to each other together with the public keys and service endpoints they need to enable their agents to use authenticated encryption.
 
@@ -686,9 +762,9 @@ When that is complete, Org’s edge agent returns its microledger updates via au
 
 The other common use case for trusted connections is private peer-to-peer connections between two parties that do not initially connect via one or the other’s public DIDs. These connections can be initiated any way that one party can share a unique **invitation address**, i.e., via a URL sent via text, email, or posted on a blog, website, LinkedIn profile, etc.
 
-![image alt text](../005-dkms/images/image_13.png)
+![image alt text](images/08-add-connection-private-did-provisioned-01.png)
 
-![image alt text](../005-dkms/images/image_14.png)
+![image alt text](images/08-add-connection-private-did-provisioned-02.png)
 
 The flow in this sequence diagram is very similar to the flow in section 10.8 where Alice is connecting to a public organization. The only difference is that rather than beginning with Alice’s edge agent knowing a public DID for the Org, Alice’s edge agent knows Bob’s invitation address. This is a service, typically provided by an agency, that enables Bob’s cloud agent to accept connection invitations (typically with appropriate spam protections and other forms of connection invitation filtering).
 
@@ -698,9 +774,9 @@ The end result is the same as in section 10.8: Alice and Bob have established a 
 
 This sequence is identical to section 10.8 except that Bob does not yet have a DKMS agent or wallet. So it addresses what is necessary for Alice to invite Bob to both start using a DKMS agent and to form a connection with Alice at the same time.
 
-![image alt text](../005-dkms/images/image_15.png)
+![image alt text](images/09-add-connection-private-did-unprovisioned-01.png)
 
-![image alt text](../005-dkms/images/image_16.png)
+![image alt text](images/09-add-connection-private-did-unprovisioned-02.png)
 
 The only difference between this sequence diagram and section 10.8 is the invitation delivery process. In 10.8, Bob already has a cloud agent, so the invitation can be delivered to an invitation address established at the hosting agency. In this sequence, Bob does not yet have cloud agent, so the invitation must be: a) anchored at a helper URL (typically provided by an agency), and b) delivered to Bob via some out-of-band means (typically an SMS, email, or other medium that can communicate a helper URL).
 
@@ -710,9 +786,9 @@ When Bob receives the invitation, Bob clicks on the URL to go to the helper page
 
 As described in section 8.1, key rotation is a core security feature of DKMS. This diagram illustrates athe protocol for key rotation.
 
-![image alt text](../005-dkms/images/image_17.png)
+![image alt text](images/10-rotate-did-key-01.png)
 
-![image alt text](../005-dkms/images/image_18.png)
+![image alt text](images/10-rotate-did-key-02.png)
 
 Key rotation may be triggered by expiration of a key or by an another event such as agent recovery. The process begins with the identity owner’s edge agent generating its own new keys. If keys also need to be rotated in the cloud agent, the edge agent sends a key change request.
 
@@ -726,7 +802,7 @@ Bob’s edge agent then needs to broadcast the changes to Bob’s cloud agent an
 
 In decentralized identity, identity owners are always in control of their relationships. This means either party to a connection can terminate the relationship by deleting it. This diagram illustrates Alice deleting the connection she had with Bob.
 
-![image alt text](../005-dkms/images/image_19.png)
+![image alt text](images/11-revoke-did.png)
 
 All that is required to delete a connection is for the edge agent to add a DISABLE event to the microledger she established with Bob. As always, this change is propagated to Alice’s cloud agent and any other edge agents authorized to interact with the DID she assigned to Bob.
 
@@ -736,7 +812,7 @@ Note that, just like in the real world, it is optional for Alice to notify Bob o
 
 Key revocation is also a required feature of DKMS architecture as discussed in section 8.2. Revocation of keys for a specific DID is accomplished either through rotation of those keys (section 10.10) or deletion of the connection (section 10.11). However in certain cases, an identity owner may need to revoke an entire edge agent, effectively disabling all keys managed by that agent. This is appropriate if a device is lost, stolen, or suspected of compromise.
 
-![image alt text](../005-dkms/images/image_20.png)
+![image alt text](images/12-revoke-edge-agent.png)
 
 Revoking an edge agent is done from another edge agent that is authorized to revoke agents. If a single edge agent is authorized, the process is straightforward. The revoking edge agent sends a signed request to the policy registry address (section 9.2) on the ledger holding the policy registry. The ledger performs the update. The revoking edge agent then "removes" the keys for the revoked edge agent by disabling them.
 
@@ -748,7 +824,7 @@ Note that an identity owner may have a stronger revocation policy, such as requi
 
 As discussed in section 6, recovery is a paramount feature of DKMS—in decentralized key management, there is no "forgot password" button (and if there were, it would be a major security vulnerability). So it is particularly important that it be easy and natural for an identity owner to select and configure recovery options.
 
-![image alt text](../005-dkms/images/image_21.png)
+![image alt text](images/13-recovery-setup.png)
 
 The process begins with Alice’s edge agent prompting Alice to select among the two recovery options described in section 6: offline recovery and social recovery. Her edge agent then creates a key pair for backup encryption, encrypts a backup of her edge wallet, and stores it with her cloud agent.
 
@@ -770,7 +846,7 @@ To some extent these can be addressed if the edge agent periodically reminds the
 
 The secret to implementing social recovery in DKMS is using DKMS agents to automate the process of securely storing, sharing, and recovering encrypted backups of DKMS wallets with several of the identity owner’s connections. In DKMS architecture, these connections are currently called trustees. (Note: this is a placeholder term pending further usability research on the best name for this new role.)
 
-![image alt text](../005-dkms/images/image_22.png)
+![image alt text](images/14-add-recovery-trustee.png)
 
 Trustees are selected by the identity owner based on the owner’s trust. For each trustee, the edge agent requests the cloud agent to create a trustee invitation. The cloud agent generates and registers with the agency a unique URL that will be used only for this purpose. The edge agent then creates a recovery data share (defined in 10.13) and shards it as defined by the identity owner’s recovery policy.
 
@@ -784,7 +860,7 @@ Once the trustee accepts the invitation, the response is returned to identity ow
 
 With DKMS infrastructure, key recovery is a lifelong process. A DKMS wallet filled with keys, DIDs, and verifiable credentials is an asset constantly increasing in value. Thus it is critical that identity owners be able to update their recovery methods as their circumstances, devices, and connections change.
 
-![image alt text](../005-dkms/images/image_23.png)
+![image alt text](images/15-recovery-update.png)
 
 For social recovery, an identity owner may wish to add new trustees or delete existing ones. Whenever this happens, the owner’s edge agent must recalculate new recovery data shares to shard among the new set of trustees. This is a two step process: the new share must first be sent to all trustees in the new set and an acknowledgement must be received from all of them. Once that it done, the edge agent can send a commitment message to all trustees in the new set to complete the process.
 
@@ -794,7 +870,7 @@ Updating offline recovery data is simply a matter of repeating the process of cr
 
 One advantage of the offline recovery process is that it can be performed very quickly by the identity owner because it has no dependencies on outside parties.
 
-![image alt text](../005-dkms/images/image_24.png)
+![image alt text](images/16-offline-recovery.png)
 
 The identity owner simply initiates recovery on a newly installed edge agent. The edge agent prompts to scan the paper wallet (or input the text). From this data, it extracts the special recovery endpoint registered in the recovery setup process (section 10.13) and the backup decryption key. It then requests the encrypted backup from the recovery endpoint (which routes to the identity owner’s cloud agent), decrypts it, restores the edge wallet, and replaces the agent keys with new keys. The final steps are to update the agent policy registry and, as a best practice, rotate all DID keys.
 
@@ -802,9 +878,9 @@ The identity owner simply initiates recovery on a newly installed edge agent. Th
 
 Social recovery, while more complex than offline recovery, is also more automated, flexible, and resilient. The secret to making it easy and intuitive for identity owners is using DKMS agents to automate every aspect of the process except for the most social step: verification of the actual identity of the identity owner by trustees.
 
-![image alt text](../005-dkms/images/image_25.png)
+![image alt text](images/17-social-recovery-01.png)
 
-![image alt text](../005-dkms/images/image_26.png)
+![image alt text](images/17-social-recovery-02.png)
 
 Social recovery, like offline recovery, begins with the installation of a fresh edge agent. The identity owner selects the social recovery option and is prompted for the contact data her edge agent and cloud agent will need to send special new connection requests to her trustees. These special connection requests are then issued as described in section 10.8.
 
@@ -816,25 +892,25 @@ At this point, the edge agent can correlate the old connection to Alice with the
 
 Now the trustee’s edge agent is ready to return the recovery data share to Alice’s new cloud agent via the recovery endpoint. The cloud agent forwards it to Alice’s new edge agent. Once Alice’s new edge agent has the required set of recovery data shares, it decrypts and assembles them. It then uses that recovery data to complete the same final steps as offline recovery described in section 10.16.
 
-# 11. Open Issues
+# 11. Open Issues and Future Work
 
-1. **DID specification.** The DKMS specification has major dependencies on the DID specification which is still in progress at the W3C Credentials Community Group. Although we are not concerned that the resulting specification will not support DKMS requirements, we cannot be specific about certain details of how DKMS will interact with DIDs until that specification is finalized. 
+1. **DID specification.** The DKMS specification has major dependencies on the DID specification which is still in progress at the W3C Credentials Community Group. Although we are not concerned that the resulting specification will not support DKMS requirements, we cannot be specific about certain details of how DKMS will interact with DIDs until that specification is finalized. However the strong market interest in DIDs led the Credentials Community Group to author an extensive [DID Use Cases](https://w3c-ccg.github.io/did-use-cases/) document and submit a [Decentralized Identifier Working Group](https://w3c-ccg.github.io/did-wg-charter/) charter to the W3C for consideration as a full Working Group. 
 
-2. **DID methods.** Different DID methods may support different levels of assurance about DKMS keys. Thus we may need to address more about the role of ledgers as a decentralized source of truth and the requirements of the ledger for the hosting of DIDs and DID documents.
+2. **DID methods.** The number of DID methods has grown substantially as shown by the unofficial [DID Method Registry](https://w3c-ccg.github.io/did-method-registry/) maintained by the W3C Credentials Community Group. Because different DID methods may support different levels of assurance about DKMS keys, more work may be required to assess about the role of different ledgers as a decentralized source of truth and the requirements of each ledger for the hosting of DIDs and DID documents.
 
-3. **DID TLS.** It is an open issue whether this should be defined as a separate but adjacent specification.
+4. **Verifiable credentials interoperability.** The [W3C Verifiable Claims Working Group](https://www.w3.org/2017/vc/charter.html) is currently preparing its 1.0 Candidate Recommendation. As verifiable credentials mature, we need to say more about how different DKMS wallets and agents from different vendors can support interoperable verifiable credentials, including those with zero-knowledge credentials and proofs. Again, this may need to extend to an adjacent protocol.
 
-4. **Verifiable credentials interoperability.** We may need to say more about how different DKMS wallets and agents from different vendors can support interoperable verifiable credentials, including those with zero-knowledge credentials and proofs. Again, this may need to extend to an adjacent protocol.
+5. **DKMS wallet and agent portability.** As mentioned in section 5.4, this aspect of the DKMS protocol is not fully specified and needs to be addressed in a subsequent version. This area of work is particularly active in the [Hyperledger Indy Agent](https://github.com/hyperledger/indy-agent) development community. A recent "connectathon" hosted by the [Sovrin Foundation](https://sovrin.org/) had 32 developers testing agent-to-agent protocol interoperability among 9 different code bases.
 
-5. **DKMS wallet and agent portability. **As mentioned in section 5.4, this aspect of the DKMS protocol is not fully specified and needs to be addressed in a subsequent version.
+6. **Secure elements, TPMs, and TEEs.** Since DKMS is highly dependent on secure elements, more work is needed to specify how a device can communicate or verify its own security capabilities or its ability to attest to authentication factors for the identity owner.
 
-6. **Secure elements, TPMs, and TEEs.** Since DKMS is highly dependent on secure elements, we need to decide how a device can communicate or verify its own security capabilities or its ability to attest to authentication factors for the identity owner.
+7. **Biometrics.** While they can play a special role in the DKMS architecture because of their ability to intrinsically identify a unique individual, this same quality means a privacy breach of biometric attributes could be disastrous because they may be unrecoverable. So determining the role of biometrics and biometric service providers is a major area of future work.
 
-7. **Biometrics.** While they can play a special role in the DKMS architecture because of their ability to intrinsically identify a unique individual, this same quality means a privacy breach of biometric attributes could be disastrous because they may be unrecoverable. So determining the role of biometrics and biometric service providers is a major open question.
-
-8. **Spam and DDOS attacks.** There are several areas where this must be considered, particularly on connection requests (section 10.7).
+8. **Spam and DDOS attacks.** There are several areas where this must be considered, particularly in relation to connection requests (section 10.7).
 
 9. **DID phishing.** DKMS can only enable security, it cannot by itself prevent a malicious actor or agency sending malicious invitations to form malicious connections that appear to be legitimate connection invitations (section 10.9).
 
+# 12. Future Standardization
 
+It is the recommendation of the authors that the work described in this document be carried forward to full Internet standardization. We believe [OASIS](http://www.oasis-open.org/) is a strong candidate for this work due to its hosting of the [Key Management Interoperability Protocol (KMIP)](https://en.wikipedia.org/wiki/Key_Management_Interoperability_Protocol_(KMIP)) at the [KMIP Technical Committee](http://www.oasis-open.org/committees/kmip/) since 2010. Please contact the authors if you are interested in contributing to the organization of a new OASIS Technical Committee on DKMS.
 
