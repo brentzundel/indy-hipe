@@ -1,6 +1,6 @@
-# Title (Ex. 0000: Template)
-- Name: (fill me in with a unique ident in kebab case, such as "my-awesome-feature")
-- Author: (your name and/or email)
+# Title: Credential Definitions for Rich Schemas
+- Name: rich-schema-cred-def
+- Author: 
 - Start Date: (fill me in with today's date, YYYY-MM-DD)
 - PR: (leave this empty)
 - Jira Issue: (leave this empty)
@@ -18,6 +18,20 @@ outcome?
 
 ## Tutorial
 [tutorial]: #tutorial
+
+### Introduction
+The current format for Indy credential definitions provides a method for
+issuers to specify a schema and provide public key data for credentials they
+issue. This ties the schema and public key data values to the issuer's DID. The
+verifier uses the credential definition to check the validity of each signed
+credential attribute presented to the verifier.
+
+The new credential definition object that uses rich schemas is a minor
+modification of the current Indy credential definition. The new format is
+expressed using JSON-LD, but has the same public key data. Instead of
+referencing a schema, the new credential definition references a mapping object.
+
+
 
 Explain the proposal as if it were already implemented and you
 were teaching it to another Indy contributor or Indy consumer. That generally
