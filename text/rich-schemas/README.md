@@ -88,11 +88,9 @@ introduced.
 ![Rich schema objects](rich-schema-objects.png)
 
 ### Verifiable Credentials
-The current format for anonymous credentials . . .
-
 The Verifiable Claims Working Group of the W3C is working to publish a
 Verifiable Credentials data model specification. Put simply, the goal
-of the new data format for anonymous credentials is to match the W3C
+of the new data format for anonymous credentials is to comply with the W3C
 specification.
 
 The data model introduces some standard properties and a shared
@@ -100,7 +98,7 @@ vocabulary so that different producers of credentials can better
 inter-operate.
 
 ### Rich Schemas
-The current format for Sovrin schemas is very straightforward. It is a
+The current format for Indy schemas is very straightforward. It is a
 JSON array of strings, each of which will be the name of a property in
 the issued credential. There is no way to specify the expected type of
 each property, nor is it explicit how the property values will be
@@ -133,10 +131,10 @@ sensitive and any valid string that is not a reserved JSON-LD keyword can be
 used as a term." - From the
 [JSON-LD Specification](https://www.w3.org/TR/json-ld/#the-context)
 
-Contexts are the standard mechanism for defining shared semantic meaning among
-rich schema objects. Contexts allow schemas, mappings, presentations, etc. to
-use a common vocabulary when referring to common attributes, i.e. they provide
-an explicit shared semantic meaning.
+Contexts are JSON objects. They are the standard mechanism for defining shared
+semantic meaning among rich schema objects. Contexts allow schemas, mappings,
+presentations, etc. to use a common vocabulary when referring to common
+attributes, i.e. they provide an explicit shared semantic meaning.
 
 Schemas serialized as JSON-LD, which are in common use today, currently use
 contexts to describe shared vocabulary; we wish to do the same.
@@ -149,99 +147,173 @@ schemas A and B, but A and B each have a property called foo. Context allows for
 A.foo and B.foo to be disambiguated in schema S.
 
 ### Mappings
+Rich schemas are complex, hierarchical, and possibly nested objects. The
+[Camenisch-Lysyanskaya signature][CL-signatures] scheme used by Indy requires
+the attributes to be represented by an array of 256-bit integers. Converting
+data specified by a rich schema into a flat array of integers requires a mapping
+object.
+
+Mappings are specified in JSON-LD. They serve as a bridge between rich schemas
+and the flat array of signed integers. A mapping specifies the order in which
+attributes are transformed and signed. It consists of a set of graph paths and
+the encoding used for the attribute values specified by those graph paths.
+
+Mappings are written to the ledger so they can be shared by multiple credential
+definitions. They need to be discoverable. When a mapping has been created or
+selected by an issuer, it is made part of the credential definition.
+
+The mappings serve as a vital part of the verification process. The verifier,
+upon receipt of a presentation must not only check that the array of integers
+signed by the issuer is valid, but that the attribute values were transformed
+and ordered according to the mapping referenced in the credential definition.
 
 ### Encodings
-All attribute values to be signed in a verifiable credential must be encoded as
-256-bit integers in order to support the current ZKP signature scheme.
+All attribute values to be signed in a verifiable credential must be transformed
+into 256-bit integers in order to support the current
+[Camenisch-Lysyanskaya signature][CL-signatures] scheme.
 
-Our current encodings support only two methods: number and string. No configuration
-method exists at this time to specify which encoding method should be applied 
-to a particular attribute. If the attribute value at the time it is 
-passed into the SDK is a number, it is represented as a 256-bit integer
-and signed. If it is a string, the value is hashed, represented as a 
-256-bit integer, and signed.
+The current method for encoding attributes as integers only supports two
+attribute types: numbers and strings. No configuration method exists at this
+time to specify which encoding method will be applied to a particular attribute.
+If the attribute value at the time it is passed into the SDK is a number, it
+will be encoded as a 256-bit integer. If the attribute value is a string, the
+value will be hashed using SHA-256, thereby encoding it as a 256-bit integer.
+The resulting 256-but integers may then be signed.
 
-The purpose of the new encoding object is to define a broad set of 
-defined methods to perform transformations for a 
-variety of data input types. These methods will better support 
-ZKP-style predicate proofs by 
-avoiding over-use of the hashing transformation. Hashed values do not 
-support predicate proofs.
-The introduction of an encoding object allows for 
-future extensions to the standard set of encodings.
- 
-All encoding methods will result in an integer representation according to 
-a consistent scheme.
+The introduction of rich schemas and their associated greater range of possible
+attribute value data types require correspondingly rich encoding algorithms.
+The purpose of the new encoding object is to specify the algorithm used to
+perform transformations for each attribute value data type. The new encoding
+algorithms will allow for broader use of predicate proofs, and avoid hashed
+values where they are not needed, as they do not support predicate proofs.
 
-Examples of encodings include:
-* Integer to Integer
-* Double to Big Decimal
-* Date to Seconds since 1970
-* String to SHA-256
-
+Encoding objects are expressed using JSON-LD and written to the ledger. The
+introduction of encoding objects also allows for a means of extending the
+standard set of encodings. All encoding methods result in an integer
+representation of an attribute value according to a the encoding algorithm
+selected by the issuer.
 
 ### Credential Definitions
+The current format for Indy credential definitions provides a method for
+issuers to specify a schema and provide public key data for credentials they
+issue. This ties the schema and public key data values to the issuer's DID. The
+verifier uses the credential definition to check the validity of each signed
+credential attribute presented to the verifier.
+
+The new credential definition object that uses rich schemas is a minor
+modification of the current Indy credential definition. The new format is
+expressed using JSON-LD, but has the same public key data. Instead of
+referencing a schema, the new credential definition references a mapping object.
 
 ### Presentation Definitions
+An Indy proof request is the current means whereby a verifier asks for data
+from a holder. A proof request contains a set of named desired proof attributes
+with corresponding restrictions that limit the potential sources for the
+attribute data according to the desired source schema, issuer DID, credential
+definition, etc. A proof request also contains a similar set of requested
+predicate proofs, with named attributes and restrictions.
+
+A presentation definition provides similar functionality for rich schema
+objects. It may be helpful to think of a presentation definition as the mirror
+image of a mapping object. Where a mapping object specifies the graph paths of
+the attributes to be signed, a presentation definition specifies the graph query
+that may be fulfilled by such graph paths. What introduces some additional
+complexity to the presentation definition is the possibility that multiple graph
+paths might satisfy the query. The query may also restrict the acceptable set of
+issuers and credential definitions and specify the desired predicates.
+
+A presentation definition is expressed using JSON-LD. One significant difference
+from proof requests is that a presentation definition may be stored on the
+ledger. This supports re-use, interoperability, and a much richer set of
+communication options. Multiple verifiers can use the same presentation
+definitions. A community may specify acceptable presentation definitions for its
+verifiers, and this acceptable set may be adopted by other communities.
+Credential offers may now include the presentation definition the issuer would
+like fulfilled by the holder before issuing them a credential. Presentation
+requests may now be more simply negotiated by pointing to different acceptable
+presentation definitions. Writing a presentation definition to the ledger also
+allows it to be publicly reviewed for privacy and security considerations and
+gain or lose reputation.
 
 ### Presentations
+The presentation object that makes use of rich schemas fills the same role that
+proofs currently fill. The new object is defined by the W3C Verifiable
+Credentials Data Model, and is known in the specification as a verifiable
+presentation. The verifiable presentation is defined as a way to present
+multiple credentials to a verifier in a single package.
+
+The claims that make up a presentation are specified by the presentation
+definition. The credentials from which these claims originate are used to
+create new derived credentials that only contain the specified claims and the
+cryptographic material necessary for proofs. The type of claims in derived
+credentials is also specified by the presentation definition. These types
+include revealed and predicate proof claims. The presentation also contains the
+cryptographic material which supports a proof that source credentials are held
+by the same entity. This is accomplished the same way it is currently
+accomplished, by proving knowledge of the link secret.
+
+A presentation is serialized as JSON-LD. It refers to the credential definitions
+on the ledger associated with the source credentials. It also refers to the
+presentation definition. A presentation is not stored on the ledger.
+
+The following image illustrates the relationship between credentials and
+presentations:
+
+![](zkp-cred-pres.png)
 
 ## Reference
 [reference]: #reference
+This document draws on a number of other documents, most notably the
+[W3C verifiable credentials and presentation data model.](https://w3c.github.io/vc-data-model/)
 
-Provide guidance for implementers, procedures to inform testing,
-interface definitions, formal function prototypes, error codes,
-diagrams, and other technical details that might be looked up.
-Strive to guarantee that:
+The signature types used here are the same as those currently used.
+Here is the paper that defines [Camenisch-Lysyanskaya signatures.][CL-signatures]
+They are the source for [Indy's AnonCreds protocol](HIPE PR awaiting merge).
 
-- Interactions with other features are clear.
-- Implementation trajectory is well defined.
-- Corner cases are dissected by example.
+The intent of rich schemas is to work alongside the current credential scheme.
+
+[CL-signatures]: (https://groups.csail.mit.edu/cis/pubs/lysyanskaya/cl02b.pdf)
 
 ## Drawbacks
 [drawbacks]: #drawbacks
 
-Why should we *not* do this?
+- The credential object formats introduced here will not be backwards compatible
+with the current set of credential objects.
+
+- Rich schemas introduce greater complexity.
+
+- The new formats rely largely on JSON-LD serialization and may be dependent on
+full or limited JSON-LD processing.
+
+- Limited increased use of the ledger.
 
 ## Rationale and alternatives
 [alternatives]: #alternatives
-
-- Why is this design the best in the space of possible designs?
-- What other designs have been considered and what is the rationale for not
-choosing them?
-- What is the impact of not doing this?
-
-## Prior art
-[prior-art]: #prior-art
-
-Discuss prior art, both the good and the bad, in relation to this proposal.
-A few examples of what this can include are:
-
-- Does this feature exist in other SSI ecosystems and what experience have
-their community had?
-- For other teams: What lessons can we learn from other attempts?
-- Papers: Are there any published papers or great posts that discuss this?
-If you have some relevant papers to refer to, this can serve as a more detailed
-theoretical background.
-
-This section is intended to encourage you as an author to think about the
-lessons from other implementers, provide readers of your proposal with a
-fuller picture. If there is no prior art, that is fine - your ideas are
-interesting to us whether they are brand new or if they are an adaptation
-from other communities.
-
-Note that while precedent set by other communities is some motivation, it
-does not on its own motivate an enhancement proposal here. Please also take
-into consideration that Indy sometimes intentionally diverges from common
-identity features.
+This design has the following benefits:
+  - It complies with the upcoming Verifiable Credentials standard.
+  - It allows for interoperability with existing schemas, such as those found
+  on [Schema.org](www.schema.org).
+  - It add greater security guarantees by providing means for validation of
+  attribute encodings.
+  - It allows for a broader range of value types to be used in predicate proofs.
+  - It introduces presentation definitions that allow for proof negotiation,
+  richer presentation specification, and a greater assurance that the presentation
+  requested complies with security and privacy concerns.
+  - It supports discoverability of schemas, mappings, encodings, presentation
+  definitions, etc.
 
 ## Unresolved questions
 [unresolved]: #unresolved-questions
 
-- What parts of the design do you expect to resolve through the
-enhancement proposal process before this gets merged?
-- What parts of the design do you expect to resolve through the
-implementation of this feature before stabilization?
-- What related issues do you consider out of scope for this 
-proposal that could be addressed in the future independently of the
-solution that comes out of this doc?
+Encodings will define an algorithm for transforming a value type into an
+integer. It is an open question whether this may be improved in the future to
+allow for remote calculation of encodings by the ledger.
+
+This technology is intended for implementation at the SDK API level. It does not
+address UI tools for the creation or editing of these objects.
+
+Variable length attribute lists are only partially addressed using mappings.
+Variable lists of attributes may be specified by a rich schema, but the maximum
+number of attributes that may be signed as part of the list must be determined
+at the time of mapping creation.
+
