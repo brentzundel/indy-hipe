@@ -1,20 +1,26 @@
 # Title: Credential Definitions for Rich Schemas
 - Name: rich-schema-cred-def
-- Author: 
-- Start Date: (fill me in with today's date, YYYY-MM-DD)
-- PR: (leave this empty)
-- Jira Issue: (leave this empty)
+- Author: Ken Ebert <ken@sovrin.org>, Brent Zundel <brent.zundel@evernym.com>
+- Start Date: 2019-04-16
+- PR:
+- Jira Issue:
 
 ## Summary
 [summary]: #summary
 
-One paragraph explanation of the feature.
+A change to the credential definition to support rich schema objects is
+required.
 
 ## Motivation
 [motivation]: #motivation
 
-Why are we doing this? What use cases does it support? What is the expected
-outcome?
+With the introduction of [rich schemas][rich-schemas], it is more fitting for
+credential definitions to reference [mapping objects][mappings] than to
+reference schemas directly. This requires a change to the credential definition.
+
+Rich schema objects make use of JSON-LD to link the data and add explicit
+semantic meaning through the use of contexts. The credential definition should
+also be serialized in JSON-LD to take advantage of these same benefits.
 
 ## Tutorial
 [tutorial]: #tutorial
@@ -31,7 +37,31 @@ modification of the current Indy credential definition. The new format is
 expressed using JSON-LD, but has the same public key data. Instead of
 referencing a schema, the new credential definition references a mapping object.
 
+### Credential Definition
 
+
+#### Contexts
+
+
+#### Types
+
+
+#### ID
+
+
+#### Issuers
+
+
+#### Mappings
+
+
+#### Public Key Material
+
+### Integration with the Ledger
+
+### Integration with Indy SDK
+
+### Discoverability
 
 Explain the proposal as if it were already implemented and you
 were teaching it to another Indy contributor or Indy consumer. That generally
@@ -49,7 +79,8 @@ consensus internals); others may be more aimed at consumers.
 
 ## Reference
 [reference]: #reference
-
+[rich-schemas]: (Rich-Schema-HIPE)
+[mappings]: (mapping-HIPE)
 Provide guidance for implementers, procedures to inform testing,
 interface definitions, formal function prototypes, error codes,
 diagrams, and other technical details that might be looked up.
