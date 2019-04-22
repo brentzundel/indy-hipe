@@ -298,6 +298,12 @@ a presentation from them.
 
 A presentation manifest is serialized as JSON-LD.
 
+### Use of JSON-LD
+#### Benefits
+- All data may be semantically annotated.
+- @type allows for simple testing of object compatibility.
+
+#### Drawbacks
 
 ## Reference
 [reference]: #reference
